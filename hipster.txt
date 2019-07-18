@@ -1,0 +1,28 @@
+	begin try
+		while @loop <= @total
+		begin
+	
+		update f set invalid_dispo_flag = fdp.invalid_dispo_flag
+		-- select f.*
+		from [CDS_VICI].[dbo].[prospect_dispo] f 
+		join #looper l on l.[prospect_dispo_to_update_id] = l.[prospect_dispo_to_update_id]
+		join CDS_VICI_DP.dbo.prospect_dispo_to_update fdp on f.prospect_dispo_id = fdp.prospect_dispo_id
+		where to_process_flag = 1 and processed_date is null
+
+		
+		update fdp set to_process_flag = 0, processed_date = getdate()
+		-- select fdp.*
+		from CDS_VICI_DP.dbo.prospect_dispo_to_update fdp
+		join #looper l on fdp.[prospect_dispo_to_update_id] = l.[prospect_dispo_to_update_id]
+		where exists (select 1 from [CDS_VICI].[dbo].[prospect_dispo] f where f.prospect_dispo_id = fdp.prospect_dispo_id and f.invalid_dispo_flag = fdp.invalid_dispo_flag)
+
+		update fdp set to_process_flag = 0, processed_date = getdate(), process_error_flag = 1
+		-- select fdp.*
+		from CDS_VICI_DP.dbo.prospect_dispo_to_update fdp
+		join #looper l on fdp.[prospect_dispo_to_update_id] = l.[prospect_dispo_to_update_id]
+		where not exists (select 1 from [CDS_VICI].[dbo].[prospect_dispo] f where f.prospect_dispo_id = fdp.prospect_dispo_id and f.invalid_dispo_flag = fdp.invalid_dispo_flag)
+
+		set @loop += 1
+
+		end
+	end try
