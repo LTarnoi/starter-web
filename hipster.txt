@@ -1,4 +1,6 @@
-	modify
+	modify 
+	again
+	and again
 
 	begin try
 		while @loop <= @total
