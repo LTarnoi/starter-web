@@ -9,6 +9,10 @@ example
 
 ## Purpose
 
+purpose
+
 ## Deployment
+
+deployment
 
 Sample website with plenty of files for demos
